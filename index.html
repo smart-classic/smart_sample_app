@@ -8,15 +8,21 @@
 var SMART;
 
 function demo_api_call() {
+  // make a smart API call to function foobar with params foo and bar
+  // register a callback when the API returns
   SMART.api_call('foobar', {'foo': 1, 'bar': 2}, function(content_type, payload) {
+     // quick and easy HTML-safe (not good enough of course, but this is a demo)
      var safe_payload = payload.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+     // show the result in the HTML with a timestamp to show a new call was made
      $('#result').html('At ' + new Date() + ', got return value, content type <b>' + content_type + '</b> and payload<br /><pre>' + safe_payload + '</pre>');
   });
 };
 
 $(document).ready(function() {
-  // HACK: hard-wired for now to port 7000 and the opener
-  var ORIGIN = "http://localhost:7001";
+  // HACK: hard-wired for now to null, to enable easier development
+  // assumes the SMArt platform is the top window of the frame, also needs tweaking
+  var ORIGIN = null;
   var FRAME = window.top;
   SMART = new SMART_CLIENT(ORIGIN, FRAME);
 

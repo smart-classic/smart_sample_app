@@ -28,7 +28,7 @@ var SMART_CLIENT = Class.extend({
     // a message received from the SMArt container
     receive_message: function(event) {
 	// only listen for events from the SMArt container origin
-	if (event.origin != this.smart_server_origin)
+	if (this.smart_server_origin != null && event.origin != this.smart_server_origin)
 	    return;
 
 	// parse message
@@ -36,6 +36,10 @@ var SMART_CLIENT = Class.extend({
 
 	// setup message with credentials and initial data
 	if (parsed_message.type == 'setup') {
+	    // FIXME: for now we are binding this client when it receives the setup message.
+	    // easier for development, may need some work
+	    this.smart_server_origin = event.origin;
+	
 	    this.receive_setup_message(parsed_message);
 	}
 
@@ -47,7 +51,10 @@ var SMART_CLIENT = Class.extend({
 
     send_ready_message: function(ready_callback) {
 	this.ready_callback = ready_callback;
-	this.frame.postMessage(JSON.stringify({'type': 'ready'}), this.smart_server_origin);
+
+	// FIXME: we are not setting a destination constraint here to make it easier to develop
+	// but we may need to do that eventually... it's not clear
+	this.frame.postMessage(JSON.stringify({'type': 'ready'}), '*');
     },
 
     receive_setup_message: function(message) {
