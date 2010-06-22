@@ -4,11 +4,45 @@
 <script src="js/json2.js"></script>
 <script src="js/smart-api-client.js"></script>
 <script>
+
+var SMART;
+
+function demo_api_call() {
+  SMART.api_call('foobar', {'foo': 1, 'bar': 2}, function(content_type, payload) {
+     var safe_payload = payload.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+     $('#result').html('At ' + new Date() + ', got return value, content type <b>' + content_type + '</b> and payload<br /><pre>' + safe_payload + '</pre>');
+  });
+};
+
 $(document).ready(function() {
-  SMART.send_ready_message();
+  // HACK: hard-wired for now to port 7000 and the opener
+  var ORIGIN = "http://localhost:7001";
+  var FRAME = window.top;
+  SMART = new SMART_CLIENT(ORIGIN, FRAME);
+
+  SMART.send_ready_message(function(record_info) {
+    // when this is called, we have credentials
+    $('#ready').show();
+
+    // set the full name of the record
+    $('#record_name').html(record_info.full_name);
+  });
+
 });
 </script>
 </head>
 <body>
 <h1>SMArt Sample App</h1>
+<div id="ready" style="display:none;">
+<p>
+<b>got credentials from SMArt Platform.<br />
+Record is for <u id="record_name"></u>.<br />
+Ready to Make API calls</b>
+</p>
+
+<button onclick="demo_api_call();">demo api call</button>
+<br /><br /><br />
+<div id="result">
+</div>
+</div>
 </body>
